@@ -1,6 +1,3 @@
-// tile_input.h - interface between P2 (FSR/ADC) and P3 (engine).
-// P2 implements; P3 consumes. P3 can stub this with fake events.
-
 #ifndef TILE_INPUT_H
 #define TILE_INPUT_H
 
