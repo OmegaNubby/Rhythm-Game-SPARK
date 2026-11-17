@@ -3,6 +3,7 @@
 #include "hardware/pwm.h"
 #include "hardware/irq.h"
 #include "hardware/clocks.h"
+#include "audio.h"
 #include "ff.h"              // FatFs (e.g., carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)
 
 #define AUDIO_PIN    36

@@ -1,4 +1,4 @@
-#include "hw_config.h"
+#include "hw_config.c"
 
 static spi_t spis[] = {{
     .hw_inst   = spi0,
