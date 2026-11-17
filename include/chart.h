@@ -1,9 +1,3 @@
-// chart.h - P4. SD card songs and note charts. Audio lives in audio.h.
-//
-// Suggested on-disk format (P4 owns the final decision), one note per line:
-//   time_ms,lane,duration_ms      (duration_ms = 0 for a tap note)
-// plus a header with title, bpm, difficulty, audio filename.
-
 #ifndef CHART_H
 #define CHART_H
 

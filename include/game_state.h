@@ -1,6 +1,3 @@
-// game_state.h - shared types between the engine (P1), renderer, and UI.
-// P1 implements game_*; UI person implements ui_*; renderer uses note_view_t.
-
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
