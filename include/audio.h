@@ -9,6 +9,8 @@ bool audio_load(const char *path);
 void audio_start(void);
 void audio_refill(void);
 uint32_t audio_time_ms(void);
+void audio_stop(void);
+bool audio_is_finished(void);
 
 #endif // AUDIO_H
 

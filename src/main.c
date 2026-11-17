@@ -43,6 +43,10 @@ int main(void) {
             int song = ui_menu_select_song(count);
             uint8_t diff = ui_menu_select_difficulty();
             game_start(song, diff);
+            if (game_get_state()->phase != GAME_PLAYING) {
+                printf("Could not start song %d (check SD card / WAV file)\n", song);
+                sleep_ms(2000);
+            }
             break;
         }
 

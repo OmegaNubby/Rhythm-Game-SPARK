@@ -27,9 +27,22 @@ static const chart_note_t stub_chart[] = {
 #define STUB_END_MS 8000
 static int stub_idx;
 
-WEAK bool        chart_init(void) { return true; }
+// OPT-IN: build with -DSTUB_MOUNT_SD to mount the SD card here, so the REAL
+// audio.c can play song1.wav while the engine runs the stub chart. Off by
+// default so the stubs never depend on FatFs being linked.
+#ifdef STUB_MOUNT_SD
+#include "ff.h"
+static FATFS stub_fs;
+WEAK bool chart_init(void) {
+    FRESULT fr = f_mount(&stub_fs, "", 1);
+    if (fr != FR_OK) printf("stub chart_init: f_mount failed, FRESULT=%d\n", (int)fr);
+    return fr == FR_OK;
+}
+#else
+WEAK bool chart_init(void) { return true; }
+#endif
 WEAK int         chart_count(void) { return 1; }
-WEAK const char *chart_audio_path(int i) { (void)i; return "stub.wav"; }
+WEAK const char *chart_audio_path(int i) { (void)i; return "song1.wav"; }
 WEAK bool chart_get_info(int i, chart_info_t *o) {
     (void)i;
     memset(o, 0, sizeof(*o));
@@ -61,7 +74,6 @@ WEAK bool audio_is_finished(void) { return audio_time_ms() > STUB_END_MS; }
 // -------------------------------------------------- stub tiles (auto-play)
 static bool stub_emitted[2 * 16];
 static bool stub_down[NUM_LANES];
-static int  stub_gen = -1;       // restarts when a new song starts
 
 static uint32_t stub_event_time(int e) {
     int i = e / 2;

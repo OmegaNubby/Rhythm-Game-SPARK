@@ -19,6 +19,8 @@ static volatile bool playing = false;
 
 static uint slice;
 static FIL wav;
+static bool file_open = false;
+static bool file_done = false;
 
 // Fires once per sample (PWM wrap)
 static void pwm_isr(void) {
@@ -54,6 +56,7 @@ void audio_init(void) {
 bool audio_load(const char *path) {
     playing = false;
     rd = wr = 0;
+    file_done = false;
     sample_counter = 0;
     if (f_open(&wav, path, FA_READ) != FR_OK) return false;
     f_lseek(&wav, WAV_HEADER);
@@ -68,7 +71,7 @@ void audio_refill(void) {
     uint8_t tmp[512];
     while ((RING_SIZE - (wr - rd)) >= sizeof(tmp)) {
         UINT got;
-        if (f_read(&wav, tmp, sizeof(tmp), &got) != FR_OK || got == 0) break;
+        if (f_read(&wav, tmp, sizeof(tmp), &got) != FR_OK || got == 0) { file_done = true; break; } // NOTE: WL MODIFIED THIS LINE IT WAS PREVIOUSLY if (f_read(&wav, tmp, sizeof(tmp), &got) != FR_OK || got == 0) break;
         for (UINT i = 0; i < got; i++) ring[(wr + i) & RING_MASK] = tmp[i];
         wr += got;
     }
@@ -94,7 +97,11 @@ while (true) {
 }
 */
 
+bool audio_is_finished(void) { return file_done && rd == wr; }
 
-
+void audio_stop(void) {
+    playing = false;
+    pwm_set_gpio_level(AUDIO_PIN, 128);
+}
 
 
