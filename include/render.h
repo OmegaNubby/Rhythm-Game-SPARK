@@ -1,6 +1,3 @@
-// render.h - interface between the engine (P1) and the TFT renderer.
-// Renderer owner implements; engine/main call. Stub exists in stubs.c.
-
 #ifndef RENDER_H
 #define RENDER_H
 

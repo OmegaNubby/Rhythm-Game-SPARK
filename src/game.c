@@ -1,5 +1,4 @@
-// game.c - Person 1: game engine.
-//
+// game.c
 // Rules:
 //  * The only clock is audio_time_ms(). tile events must carry timestamps
 //    on that same clock (see tile_input.h).

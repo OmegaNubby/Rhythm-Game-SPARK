@@ -1,5 +1,3 @@
-// main.c - Person 1: init + top-level loop. Integration only; no feature logic.
-
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pins.h"
@@ -8,13 +6,17 @@
 #include "chart.h"
 #include "audio.h"
 #include "render.h"
+#include "ui.h"
 
 #define UI_PERIOD_US 100000   // refresh LCD/7-seg at 10 Hz (I2C is slow)
 
 int main(void) {
     stdio_init_all();
-    sleep_ms(1500);                       // let USB serial come up
-    printf("Rhythm game boot\n");
+
+    sleep_ms(3000);  // Give USB serial time to connect
+
+    printf("\n\nRhythm game boot\r\n");
+    printf("Serial output is working\r\n");
 
     tile_input_init();
     audio_init();
@@ -48,6 +50,7 @@ int main(void) {
                 sleep_ms(2000);
             }
             break;
+            sleep_ms(1);
         }
 
         case GAME_PLAYING: {
