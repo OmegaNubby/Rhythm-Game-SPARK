@@ -83,20 +83,6 @@ uint32_t audio_time_ms(void) {
 }
 
 
-/*
-main stuff
-f_mount(&fs, "", 1);
-audio_init();
-audio_load("song1.wav");
-audio_start();
-
-while (true) {
-    audio_refill();                      // keep the ring buffer full
-    uint32_t t = audio_time_ms();        // compare against chart note timestamps
-    // game_update(t);  (Person 3's engine calls this)
-}
-*/
-
 bool audio_is_finished(void) { return file_done && rd == wr; }
 
 void audio_stop(void) {
