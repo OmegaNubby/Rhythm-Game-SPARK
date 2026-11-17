@@ -6,7 +6,7 @@
 #include "audio.h"
 #include "ff.h"              // FatFs (e.g., carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)
 
-#define AUDIO_PIN    36
+#define AUDIO_PIN    44
 #define SAMPLE_RATE  22050
 #define WAV_HEADER   44               // assumes canonical 44-byte header
 #define RING_SIZE    8192             // power of 2
