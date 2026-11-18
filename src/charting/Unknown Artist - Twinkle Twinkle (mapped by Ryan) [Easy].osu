@@ -1,0 +1,98 @@
+osu file format v14
+// Made with Cascade - https://cascade.sheepex.net
+
+[General]
+AudioFilename: Twinkle Twinkle Little Star Harmonica.mp3
+AudioLeadIn: 0
+PreviewTime: -1
+Countdown: 0
+SampleSet: Easy
+StackLeniency: 0.7
+Mode: 3
+LetterboxInBreaks: 0
+SpecialStyle: 0
+WidescreenStoryboard: 0
+
+[Editor]
+DistanceSpacing: 1
+BeatDivisor: 4
+GridSize: 8
+TimelineZoom: 1
+
+[Metadata]
+Title:Untitled
+TitleUnicode:Untitled
+Artist:Unknown Artist
+ArtistUnicode:Unknown Artist
+Creator:OmegaNubby
+Version:Normal
+Source:
+Tags:Cascade
+BeatmapID:0
+BeatmapSetID:-1
+
+[Difficulty]
+HPDrainRate:7
+CircleSize:4
+OverallDifficulty:7
+ApproachRate:5
+SliderMultiplier:1.4
+SliderTickRate:1
+
+[Events]
+//Background and Video events
+//Break Periods
+//Storyboard Layer 0 (Background)
+//Storyboard Layer 1 (Fail)
+//Storyboard Layer 2 (Pass)
+//Storyboard Layer 3 (Foreground)
+//Storyboard Layer 4 (Overlay)
+//Storyboard Sound Samples
+
+[TimingPoints]
+2238,575.3739930955121,4,1,0,100,1,0
+
+
+[HitObjects]
+448,192,2094,1,0,0:0:0:0:
+448,192,2669,1,0,0:0:0:0:
+192,192,3244,1,0,0:0:0:0:
+192,192,3820,1,0,0:0:0:0:
+64,192,4467,1,0,0:0:0:0:
+64,192,4971,1,0,0:0:0:0:
+320,192,5546,128,0,6409:0:0:0:0:
+64,192,6769,1,0,0:0:0:0:
+64,192,7272,1,0,0:0:0:0:
+192,192,7847,1,0,0:0:0:0:
+192,192,8423,1,0,0:0:0:0:
+320,192,9070,1,0,0:0:0:0:
+320,192,9574,1,0,0:0:0:0:
+448,192,10149,128,0,11012:0:0:0:0:
+64,192,11300,1,0,0:0:0:0:
+64,192,11875,1,0,0:0:0:0:
+192,192,12450,1,0,0:0:0:0:
+192,192,13026,1,0,0:0:0:0:
+320,192,13529,1,0,0:0:0:0:
+320,192,14177,1,0,0:0:0:0:
+448,192,14752,128,0,15615:0:0:0:0:
+448,192,15903,1,0,0:0:0:0:
+448,192,16478,1,0,0:0:0:0:
+320,192,16981,1,0,0:0:0:0:
+320,192,17557,1,0,0:0:0:0:
+192,192,18132,1,0,0:0:0:0:
+192,192,18708,1,0,0:0:0:0:
+64,192,19355,128,0,20218:0:0:0:0:
+448,192,20506,1,0,0:0:0:0:
+448,192,21081,1,0,0:0:0:0:
+192,192,21728,1,0,0:0:0:0:
+192,192,22304,1,0,0:0:0:0:
+64,192,22879,1,0,0:0:0:0:
+64,192,23382,1,0,0:0:0:0:
+320,192,23958,128,0,24821:0:0:0:0:
+448,192,25181,1,0,0:0:0:0:
+448,192,25684,1,0,0:0:0:0:
+320,192,26331,1,0,0:0:0:0:
+320,192,26835,1,0,0:0:0:0:
+192,192,27482,1,0,0:0:0:0:
+192,192,27985,1,0,0:0:0:0:
+64,192,28633,128,0,29352:0:0:0:0:
