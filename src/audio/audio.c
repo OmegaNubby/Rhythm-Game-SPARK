@@ -6,6 +6,14 @@
 #include "audio.h"
 #include "ff.h"              // FatFs (e.g., carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)
 
+
+// FatFs timestamp hook. We only read the SD, so a fixed date is fine.
+DWORD get_fattime(void) {
+    return ((DWORD)(2026 - 1980) << 25)   // year
+         | ((DWORD)11 << 21)              // month
+         | ((DWORD)18 << 16);             // day
+}
+
 #define AUDIO_PIN    44
 #define SAMPLE_RATE  22050
 #define WAV_HEADER   44               // assumes canonical 44-byte header

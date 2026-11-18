@@ -4,8 +4,9 @@
 #include "hw_config.h"
 #include "audio.h"
 
+
 #define AUDIO_PIN 44
-#define TONE_ONLY 1     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
+#define TONE_ONLY 0     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
 
 DWORD get_fattime(void) { return ((DWORD)(2026 - 1980) << 25) | ((DWORD)1 << 21) | ((DWORD)1 << 16); }
 // delete the line above if it's already defined in your audio.c or elsewhere
