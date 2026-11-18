@@ -17,3 +17,5 @@ static sd_card_t sd_cards[] = {{
 
 size_t sd_get_num(void) { return count_of(sd_cards); }
 sd_card_t *sd_get_by_num(size_t num) { return (num < sd_get_num()) ? &sd_cards[num] : NULL; }
+size_t spi_get_num(void) { return count_of(spis); }
+spi_t *spi_get_by_num(size_t num) { return (num < spi_get_num()) ? &spis[num] : NULL; }

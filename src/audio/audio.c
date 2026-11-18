@@ -19,7 +19,7 @@ static volatile bool playing = false;
 
 static uint slice;
 static FIL wav;
-static bool file_open = false;
+//static bool file_open = false;
 static bool file_done = false;
 
 // Fires once per sample (PWM wrap)

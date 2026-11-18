@@ -16,6 +16,7 @@ int main(void) {
     printf("\naudio test\n");
 
 #if TONE_ONLY
+    printf("tone only test\n");
     gpio_init(AUDIO_PIN);
     gpio_set_dir(AUDIO_PIN, GPIO_OUT);
     while (true) {                       // ~440 Hz square wave
