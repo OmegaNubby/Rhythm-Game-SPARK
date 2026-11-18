@@ -2,7 +2,7 @@ osu file format v14
 // Made with Cascade - https://cascade.sheepex.net
 
 [General]
-AudioFilename: Twinkle Twinkle Little Star Harmonica.mp3
+AudioFilename: twinkle_star.wav
 AudioLeadIn: 0
 PreviewTime: -1
 Countdown: 0
@@ -20,21 +20,19 @@ GridSize: 8
 TimelineZoom: 1
 
 [Metadata]
-Title:Untitled
+Title:Twinkle Star
 TitleUnicode:Untitled
-Artist:Unknown Artist
+Artist:Harmonica
 ArtistUnicode:Unknown Artist
-Creator:OmegaNubby
-Version:Normal
+Creator:Ryan
+Version:Easy
 Source:
 Tags:Cascade
 BeatmapID:0
 BeatmapSetID:-1
 
 [Difficulty]
-HPDrainRate:7
 CircleSize:4
-OverallDifficulty:7
 ApproachRate:5
 SliderMultiplier:1.4
 SliderTickRate:1
