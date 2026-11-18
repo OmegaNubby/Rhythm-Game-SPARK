@@ -88,6 +88,16 @@ void ui_init(void) {
     last_score_shown = 0xFFFFFFFFu;
     shown[0][0] = '\0';
     shown[1][0] = '\0';
+
+    // Startup screen to tell the board is running the UI
+    printf("UI: init done, showing welcome\n");
+    lcd_wipe();
+    lcd_row(0, "Welcome to");
+    lcd_row(1, "Rhythm Game!");
+    seg7_update(8888);                      // lights every digit: quick 7-seg wiring check
+    sleep_ms(2000);
+    seg7_update(0);
+    last_score_shown = 0;
 }
 
 // Interactive menu loop called by main.c during GAME_MENU
