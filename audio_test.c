@@ -6,10 +6,8 @@
 
 
 #define AUDIO_PIN 44
-#define TONE_ONLY 0     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
+#define TONE_ONLY 1     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
 
-DWORD get_fattime(void) { return ((DWORD)(2026 - 1980) << 25) | ((DWORD)1 << 21) | ((DWORD)1 << 16); }
-// delete the line above if it's already defined in your audio.c or elsewhere
 
 int main(void) {
     stdio_init_all();
@@ -25,6 +23,7 @@ int main(void) {
         gpio_put(AUDIO_PIN, 0); sleep_us(1136);
     }
 #else
+    printf("SD card test\n");
     sd_card_t *sd = sd_get_by_num(0);
     FRESULT fr = f_mount(&sd->fatfs, sd->pcName, 1);
     printf("mount: %d\n", fr);
