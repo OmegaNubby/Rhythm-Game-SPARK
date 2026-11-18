@@ -29,6 +29,7 @@ typedef struct {
     judgement_t  last_judgement;   // most recent result, for hit feedback
     uint8_t      last_lane;
     uint16_t     judgement_seq;    // increments on every new judgement
+    int16_t      last_offset_ms;   // press time minus note time: negative = early, positive = late
 } game_state_t;
 
 // What the renderer needs to draw one note.
