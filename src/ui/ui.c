@@ -120,6 +120,7 @@ int ui_menu_select_song(int count) {
     snprintf(line, sizeof line, "Select Song 1-%d", limit);
     lcd_row(0, line);
     lcd_row(1, "# to confirm");
+    printf("MENU: waiting for key 1-%d, then # or D\n", limit);
     sleep_ms(1200);                         // brief instructional flash
 
     draw_menu();
@@ -132,10 +133,15 @@ int ui_menu_select_song(int count) {
             int idx = key - '1';
             if (idx != selected_song_index) {
                 selected_song_index = idx;
+                printf("MENU: selected song %d (%s, %s)\n",
+                       selected_song_index + 1,
+                       song_titles[selected_song_index],
+                       mode_names[selected_song_index]);
                 draw_menu();                // redraw only when the choice changes
             }
         } else if (key == '#' || key == 'D') {
             confirmed = true;
+            printf("MENU: confirmed song %d\n", selected_song_index + 1);
         }
         sleep_ms(MENU_POLL_MS);
     }

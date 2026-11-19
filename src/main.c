@@ -50,7 +50,6 @@ int main(void) {
                 sleep_ms(2000);
             }
             break;
-            sleep_ms(1);
         }
 
         case GAME_PLAYING: {

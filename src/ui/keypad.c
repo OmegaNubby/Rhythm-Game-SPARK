@@ -1,9 +1,9 @@
 #include "keypad.h"
 #include "pins.h"
 #include "pico/stdlib.h"
+#include <stdio.h>
 
 // Rows are 4 consecutive input pins, columns are 4 consecutive output pins.
-// Better: define these two in pins.h (defaults match your breadboard, GP2-9).
 #ifndef KEYPAD_ROW_FIRST_PIN
 #define KEYPAD_ROW_FIRST_PIN 2      // rows    = GP2-GP5
 #endif
@@ -23,9 +23,15 @@ static const char keymap[4][4] = {
 
 static char     last_raw = 0;
 static char     stable = 0;
+static char     reported = 0;
 static uint32_t last_change_ms = 0;
 
 void keypad_init(void) {
+    last_raw = 0;
+    stable = 0;
+    reported = 0;
+    last_change_ms = 0;
+
     for (int i = 0; i < 4; i++) {
         uint row = KEYPAD_ROW_FIRST_PIN + i;
         gpio_init(row);
@@ -63,9 +69,19 @@ char keypad_get_key(void) {
         last_raw = raw;
         last_change_ms = now;
     }
-    if (raw != stable && (now - last_change_ms) >= DEBOUNCE_MS) {
-        stable = raw;
-        if (stable) return stable;      // report presses only, not releases
+
+    if ((now - last_change_ms) >= DEBOUNCE_MS) {
+        if (raw != stable) {
+            stable = raw;
+            if (stable == 0) {
+                reported = 0;           // key released; allow next press
+            }
+        }
+        if (stable != 0 && reported != stable) {
+            reported = stable;
+            printf("KEY: '%c'\n", stable);
+            return stable;
+        }
     }
     return 0;
 }
