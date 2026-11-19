@@ -64,15 +64,6 @@ static void read_chart_header(chart_entry_t *chart) {
         if (strncmp(line, "Title:", 6) == 0) {
             strncpy(chart->info.title, line + 6, CHART_TITLE_MAX);
             chart->info.title[CHART_TITLE_MAX] = '\0';
-        } else if (strncmp(line, "Version:", 8) == 0) {
-            char *version = line + 8;
-            if (strstr(version, "Hard") != NULL)
-                chart->info.difficulty = 3;
-            else if (strstr(version, "Medium") != NULL ||
-                     strstr(version, "Normal") != NULL)
-                chart->info.difficulty = 2;
-            else
-                chart->info.difficulty = 1;
         } else if (strncmp(line, "AudioFilename:", 14) == 0) {
             const char *audio = line + 14;
             while (*audio == ' ') audio++;
