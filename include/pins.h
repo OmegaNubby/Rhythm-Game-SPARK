@@ -10,6 +10,7 @@
 //   7-seg: software bit-bang   (GP13-15) - NOT hardware SPI1, because the
 //          SD card already uses SPI1 on other pins.
 
+#include "hardware/i2c.h"
 #ifndef PINS_H
 #define PINS_H
 
@@ -23,12 +24,19 @@
 #define PIN_SEG_CLK           14    // SRCLK
 #define PIN_SEG_DATA          15    // SER
 
-// ---------------- Character LCD, AIP31068L (I2C1) ---------
-#define LCD_I2C               i2c1
-#define PIN_LCD_SDA           26
-#define PIN_LCD_SCL           27
-#define PIN_LCD_AUX           25    // TODO: backlight or reset? confirm and rename
-#define LCD_I2C_ADDR          0x3E  // TODO: confirm with an I2C scan
+// ---- LCD (AIP31068L, I2C) ----
+#define LCD_I2C        i2c1      // GPIO30/31 are I2C1, so this MUST be i2c1
+#define PIN_LCD_SDA    30
+#define PIN_LCD_SCL    31
+#define LCD_I2C_ADDR   0x3E
+#define LCD_I2C_BAUD   100000
+
+// // ---------------- Character LCD, AIP31068L (I2C1) ---------
+// #define LCD_I2C               i2c1
+// #define PIN_LCD_SDA           26
+// #define PIN_LCD_SCL           27
+// // #define PIN_LCD_AUX           25    // TODO: backlight or reset? confirm and rename
+// #define LCD_I2C_ADDR          0x3E  // TODO: confirm with an I2C scan
 
 // ---------------- SPI0: TFT -------------------------------
 #define SPI_TFT               spi0
@@ -37,8 +45,6 @@
 #define PIN_TFT_CS            21    // SPI0 CSn pin, driven as plain GPIO by the driver
 #define PIN_TFT_DC            20
 #define PIN_TFT_RST           22
-// TODO: second TFT? It can share SCK/MOSI/DC/RST and just needs its own CS,
-//       e.g. #define PIN_TFT2_CS 17
 
 // ---------------- SPI1: microSD ---------------------------
 #define SPI_SD                spi1
