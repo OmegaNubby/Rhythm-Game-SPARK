@@ -89,12 +89,11 @@ static bool any_active(void) {
 static void handle_press(const tile_event_t *ev) {
     int best = -1;
     int32_t best_err = 0x7FFFFFFF;
-    int32_t best_signed = 0;                    // UI: signed error of the winning note
+    int32_t best_signed = 0;       // signed: negative = early, positive = late
 
     for (int i = 0; i < MAX_ACTIVE; i++) {
         if (slots[i].state != SLOT_PENDING || slots[i].note.lane != ev->lane)
             continue;
-        // UI: keep the sign (negative = early, positive = late)
         int32_t signed_err = (int32_t)ev->time_ms - (int32_t)slots[i].note.time_ms;
         int32_t err = signed_err < 0 ? -signed_err : signed_err;
         if (err <= (int32_t)good_ms && err < best_err) {
@@ -105,8 +104,7 @@ static void handle_press(const tile_event_t *ev) {
     }
     if (best < 0) return;   // stray tap: no penalty
 
-    // UI: set BEFORE register_hit(), which bumps judgement_seq
-    st.last_offset_ms = (int16_t)best_signed;
+    st.last_offset_ms = (int16_t)best_signed;   // before register_hit bumps judgement_seq
     register_hit(best_err <= (int32_t)perfect_ms, ev->lane);
     if (slots[best].note.duration_ms > 0)
         slots[best].state = SLOT_HOLDING;

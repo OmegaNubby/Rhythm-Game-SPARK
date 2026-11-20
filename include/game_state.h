@@ -28,8 +28,8 @@ typedef struct {
     uint32_t     song_time_ms;     // audio clock at last game_update()
     judgement_t  last_judgement;   // most recent result, for hit feedback
     uint8_t      last_lane;
+    int16_t      last_offset_ms;   // timing error of last hit: negative = early, positive = late
     uint16_t     judgement_seq;    // increments on every new judgement
-    int16_t      last_offset_ms;   // press time minus note time: negative = early, positive = late
 } game_state_t;
 
 // What the renderer needs to draw one note.

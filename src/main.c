@@ -6,17 +6,14 @@
 #include "chart.h"
 #include "audio.h"
 #include "render.h"
-#include "ui.h"
+// #include "ui.h"
 
 #define UI_PERIOD_US 100000   // refresh LCD/7-seg at 10 Hz (I2C is slow)
 
 int main(void) {
     stdio_init_all();
-
-    sleep_ms(3000);  // Give USB serial time to connect
-
-    printf("\n\nRhythm game boot\r\n");
-    printf("Serial output is working\r\n");
+    sleep_ms(1500);                       // let USB serial come up
+    printf("Rhythm game boot\n");
 
     tile_input_init();
     audio_init();
@@ -50,7 +47,6 @@ int main(void) {
                 sleep_ms(2000);
             }
             break;
-            sleep_ms(1);
         }
 
         case GAME_PLAYING: {
@@ -74,7 +70,10 @@ int main(void) {
             ui_update(s);
             printf("Done. score=%lu max_combo=%u hits=%u misses=%u\n",
                    (unsigned long)s->score, s->max_combo, s->hits, s->misses);
-            sleep_ms(5000);               // TODO: wait for keypress instead
+            for (int i = 0; i < 90; i++) {    // ~9 s: keep calling so results pages rotate
+                ui_update(s);
+                sleep_ms(100);
+            }
             game_stop();                  // back to GAME_MENU
             break;
 
