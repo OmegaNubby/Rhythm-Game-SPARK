@@ -27,7 +27,6 @@
 #define LCD_I2C               i2c1
 #define PIN_LCD_SDA           26
 #define PIN_LCD_SCL           27
-#define PIN_LCD_AUX           25    // TODO: backlight or reset? confirm and rename
 #define LCD_I2C_ADDR          0x3E  // TODO: confirm with an I2C scan
 
 // ---------------- SPI0: TFT -------------------------------

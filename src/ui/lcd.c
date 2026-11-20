@@ -94,9 +94,13 @@ void lcd_init(void) {
     // Give the LCD controller time to power up
     sleep_ms(50);
 
-    // Initialize AIP31068L in 8-bit interface mode over I2C
+    // Repeat the function set so the controller recovers from an unknown
+    // power-up state, as required by the HD44780-compatible initialization.
     lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
     sleep_ms(5);
+    lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
+    sleep_us(150);
+    lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
 
     // Display control: Display ON, Cursor OFF, Blink OFF
     lcd_send(CONTROL_BYTE_CMD, LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
