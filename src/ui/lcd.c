@@ -108,9 +108,23 @@ void lcd_init(void) {
     i2c_scan();
 #endif
 
-    // Initialize AIP31068L in 8-bit interface mode over I2C
+    // Probe the LCD itself. If nothing answers, leave lcd_present false so
+    // every later call becomes a harmless no-op instead of spamming errors.
+    uint8_t probe = CONTROL_BYTE_CMD;
+    int r = i2c_write_timeout_us(LCD_I2C, LCD_I2C_ADDR, &probe, 1, false, LCD_I2C_TIMEOUT_US);
+    if (r < 0) {
+        printf("lcd: no ACK from 0x%02X (%d), LCD disabled\n", LCD_I2C_ADDR, r);
+        return;
+    }
+    lcd_present = true;
+
+    // Function set is sent three times with short waits, as many
+    // HD44780-style controllers expect.
     lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
     sleep_ms(5);
+    lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
+    sleep_us(150);
+    lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
 
     // Display ON, cursor OFF, blink OFF
     lcd_send(CONTROL_BYTE_CMD, LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
