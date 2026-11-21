@@ -181,7 +181,7 @@ bool chart_open(int index) {
             char *trimmed = line;
             while (*trimmed == ' ' || *trimmed == '\t') trimmed++;
 
-            if (strncmp(trimmed, "[HitObjects]", 12) == 0) {
+            if (strncmp(trimmed, "[HitObjects]", 13) == 0) {
                 hit_objects = true;
                 continue;
             }
