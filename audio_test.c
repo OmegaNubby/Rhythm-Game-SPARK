@@ -31,7 +31,7 @@ int main(void) {
     f_chdrive(sd->pcName);
 
     audio_init();
-    if (!audio_load("Untitled.wav")) { printf("open failed\n"); while (1) tight_loop_contents(); }
+    if (!audio_load("flurry.wav")) { printf("open failed\n"); while (1) tight_loop_contents(); }
     audio_start();
     printf("playing\n");
 
