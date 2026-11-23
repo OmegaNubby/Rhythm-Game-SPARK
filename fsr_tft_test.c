@@ -1,82 +1,74 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/adc.h"
-#include "include/tft.h"
 
-// Your four FSR connections
-#define FSR_COUNT 4
+#include "pins.h"
+#include "tile_input.h"
+#include "game_state.h"
+#include "include/render.h"
+#include "audio.h"
 
-static const uint FSR_GPIO[FSR_COUNT] = {
-    40, 41, 42, 43
-};
-
-static const uint16_t LANE_COLORS[FSR_COUNT] = {
-    TFT_CYAN, TFT_MAGENTA, TFT_YELLOW, 0xA01F
-};
-
-#define BAR_TOP     65
-#define BAR_BOTTOM  260
-#define BAR_HEIGHT  (BAR_BOTTOM - BAR_TOP)
-#define BAR_WIDTH   44
-#define BAR_GAP     12
+// Test-only replacement for audio_time_ms().
+// The actual game will use the real function from audio.c.
+uint32_t audio_time_ms(void)
+{
+    return to_ms_since_boot(get_absolute_time());
+}
 
 int main(void)
 {
     stdio_init_all();
     sleep_ms(1500);
 
-    adc_init();
+    printf("FSR + TFT test starting\n");
 
-    for (int i = 0; i < FSR_COUNT; i++) {
-        adc_gpio_init(FSR_GPIO[i]);
-    }
+    tile_input_init();
+    render_init();
 
-    tft_init();
-    tft_set_rotation(0);
-    tft_fill_screen(TFT_BLACK);
+    game_state_t test_state = {0};
+    test_state.phase = GAME_PLAYING;
 
-    // Draw four lane backgrounds
-    for (int i = 0; i < FSR_COUNT; i++) {
-        int x = 8 + i * 60;
-        tft_fill_rect(x, BAR_TOP, BAR_WIDTH, BAR_HEIGHT,
-                      0x2104);
-    }
+    note_view_t notes[NUM_LANES];
+
+    uint32_t last_render = 0;
 
     while (true) {
-        for (int i = 0; i < FSR_COUNT; i++) {
-            // GP40 = ADC channel 0, GP41 = channel 1, etc.
-            adc_select_input(FSR_GPIO[i] - 40);
-            sleep_us(10);
+        // Poll sensors frequently.
+        tile_input_poll();
 
-            uint16_t raw = adc_read();
+        // Print press/release events for debugging.
+        tile_event_t event;
 
-            // Map ADC value to a bar height.
-            int height = (raw * BAR_HEIGHT) / 4095;
-
-            if (height > BAR_HEIGHT)
-                height = BAR_HEIGHT;
-
-            int x = 8 + i * 60;
-
-            // Clear the old bar.
-            tft_fill_rect(x, BAR_TOP, BAR_WIDTH, BAR_HEIGHT,
-                          0x2104);
-
-            // Draw the current reading.
-            if (height > 0) {
-                tft_fill_rect(
-                    x,
-                    BAR_BOTTOM - height,
-                    BAR_WIDTH,
-                    height,
-                    LANE_COLORS[i]
-                );
-            }
-
-            printf("FSR %d: %u\n", i + 1, raw);
+        while (tile_input_get_event(&event)) {
+            printf("Lane %u: %s, pressure=%u, time=%lu ms\n",
+                   event.lane,
+                   event.type == TILE_PRESS ? "PRESS" : "RELEASE",
+                   event.pressure,
+                   (unsigned long)event.time_ms);
         }
 
-        printf("--------------------\n");
-        sleep_ms(100);
+        // Refresh the TFT around every 33 ms.
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+
+        if (now - last_render >= 33) {
+            int count = 0;
+
+            for (uint8_t lane = 0; lane < NUM_LANES; lane++) {
+                if (tile_input_is_down(lane)) {
+                    notes[count++] = (note_view_t) {
+                        .lane = lane,
+                        .is_hold = true,
+                        .holding = true,
+                        .y_head = 220,
+                        .y_tail = 120
+                    };
+                }
+            }
+
+            render_frame(&test_state, notes, count);
+
+            last_render = now;
+        }
+
+        sleep_ms(1);
     }
 }
