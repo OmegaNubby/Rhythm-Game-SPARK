@@ -1,0 +1,17 @@
+twinkle.wav
+bit rate: 256kbps
+channels: 1 (mono)
+sample rate: 16k Hz
+sample size: 16 bits
+
+NGYU.wav
+bit rate: 1411kbps
+channels: 2 (stereo)
+sample rate: 44.1k Hz
+sample size: 16 bits
+
+flurry.wav
+bit rate: 1536kbps
+channels: 2 (stereo)
+sample rate: 48k Hz
+sample size: 16 bits

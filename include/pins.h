@@ -2,7 +2,7 @@
 // Target: RP2350B (Proton dev board; same numbers on our custom PCB).
 //
 // Peripheral buses at a glance:
-//   SPI0 : TFT                 (GP18 SCK, GP19 MOSI, GP21 CSn)
+//   SPI0 : TFT                 (GP18 SCK, GP19 MOSI, GP17 CSn)
 //   SPI1 : microSD             (GP28 MISO, GP30 SCK, GP31 MOSI)
 //   I2C1 : character LCD       (GP10 SDA, GP11 SCL)
 //   ADC  : 4 FSRs              (GP40-43 = ADC0-3)
@@ -34,7 +34,7 @@
 #define SPI_TFT               spi0
 #define PIN_TFT_SCK           18
 #define PIN_TFT_MOSI          19    // TX; TFT MISO is not wired
-#define PIN_TFT_CS            21    // SPI0 CSn pin, driven as plain GPIO by the driver
+#define PIN_TFT_CS            17    // SPI0 CSn pin, driven as plain GPIO by the driver
 #define PIN_TFT_DC            20
 #define PIN_TFT_RST           22
 
