@@ -1,7 +1,7 @@
 twinkle.wav
-bit rate: 256 kbps
-channels: 1 (mono)
-sample rate: 16k Hz
+bit rate: 1411 kbps
+channels: 2 (stereo)
+sample rate: 44.1k Hz
 sample size: 16 bits
 
 NGYU.wav
