@@ -24,19 +24,12 @@
 #define PIN_SEG_CLK           14    // SRCLK
 #define PIN_SEG_DATA          15    // SER
 
-// ---- LCD (AIP31068L, I2C) ---- FOR WEN LINGS BREADBOARD NOT UR GUYS
-// #define LCD_I2C        i2c1      // GPIO30/31 are I2C1, so this MUST be i2c1
-// #define PIN_LCD_SDA    30
-// #define PIN_LCD_SCL    31
-// #define LCD_I2C_ADDR   0x3E
-// #define LCD_I2C_BAUD   100000
-
 // ---------------- Character LCD, AIP31068L (I2C1) ---------
 #define LCD_I2C               i2c1
-#define PIN_LCD_SDA           26
-#define PIN_LCD_SCL           27
+#define PIN_LCD_SDA           10
+#define PIN_LCD_SCL           11
 #define PIN_LCD_AUX           25    // TODO: backlight or reset? confirm and rename
-#define LCD_I2C_ADDR          0x3E  // TODO: confirm with an I2C scan
+#define LCD_I2C_ADDR          0x27  // TODO: confirm with an I2C scan
 
 // ---------------- SPI0: TFT -------------------------------
 #define SPI_TFT               spi0
