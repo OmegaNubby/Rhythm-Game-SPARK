@@ -14,7 +14,7 @@ DWORD get_fattime(void) {
          | ((DWORD)18 << 16);             // day
 }
 
-#define AUDIO_PIN    44
+#define AUDIO_PIN    47
 #define SAMPLE_RATE  22050
 #define WAV_HEADER   44               // assumes canonical 44-byte header
 #define RING_SIZE    8192             // power of 2

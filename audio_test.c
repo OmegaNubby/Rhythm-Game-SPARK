@@ -5,7 +5,7 @@
 #include "audio.h"
 
 
-#define AUDIO_PIN 44
+#define AUDIO_PIN 47
 #define TONE_ONLY 1     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
 
 

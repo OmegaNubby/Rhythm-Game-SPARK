@@ -54,7 +54,7 @@
 #define PIN_SD_MOSI           31
 
 // ---------------- Audio (PWM -> RC filter -> jack) --------
-#define PIN_AUDIO_PWM         44
+#define PIN_AUDIO_PWM         47
 
 // ---------------- FSR tiles (ADC) -------------------------
 // RP2350B: ADC inputs are GP40..GP47 = ADC channels 0..7.
