@@ -3,10 +3,11 @@
 #include "ff.h"
 #include "hw_config.h"
 #include "audio.h"
+#include "diskio.h"
 
 
 #define AUDIO_PIN 47
-#define TONE_ONLY 1     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
+#define TONE_ONLY 0     // 1 = test wiring/speaker only, 0 = play song1.wav from SD
 
 
 int main(void) {
@@ -24,14 +25,29 @@ int main(void) {
     }
 #else
     printf("SD card test\n");
+    uint8_t sector[512];
+
+    DRESULT result = disk_read(0, sector, 0, 1);
+
+    printf("Read result: %d\n", result);
+
+    printf("First 16 bytes: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02X ", sector[i]);
+    }
+    printf("\n");
+
+    printf("Boot signature: %02X %02X\n",
+       sector[510], sector[511]);
     sd_card_t *sd = sd_get_by_num(0);
     FRESULT fr = f_mount(&sd->fatfs, sd->pcName, 1);
+    
     printf("mount: %d\n", fr);
     if (fr != FR_OK) while (1) tight_loop_contents();
     f_chdrive(sd->pcName);
 
     audio_init();
-    if (!audio_load("song1.wav")) { printf("open failed\n"); while (1) tight_loop_contents(); }
+    if (!audio_load("twinkle.wav")) { printf("open failed\n"); while (1) tight_loop_contents(); }
     audio_start();
     printf("playing\n");
 
