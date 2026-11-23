@@ -1,13 +1,4 @@
 // lcd.c - 16x2 HD44780 character LCD behind a PCF8574 I2C backpack
-// (the common "LCM1602" board, address 0x27, or 0x3F for the PCF8574A).
-//
-// The PCF8574 is just an 8-bit I/O expander. Each byte we send sets its pins:
-//   P0 = RS   P1 = RW (kept 0)   P2 = E   P3 = backlight   P4..P7 = D4..D7
-// The LCD runs in 4-bit mode, so every character/command takes two nibbles,
-// and every nibble needs an E pulse (E high, then E low).
-//
-// Public API is unchanged: lcd_init, lcd_clear, lcd_set_cursor,
-// lcd_write_char, lcd_write_string.
 
 #include "lcd.h"
 #include "pins.h"
@@ -38,7 +29,7 @@
 
 // Tried in order. LCD_I2C_ADDR from pins.h goes first; the others are the two
 // usual backpack addresses, so a wrong pins.h value still gets found.
-static const uint8_t addr_candidates[] = { LCD_I2C_ADDR, 0x27, 0x3F };
+static const uint8_t addr_candidates[] = { LCD_I2C_ADDR, 0x27, 0x3F};
 
 static uint8_t lcd_addr    = LCD_I2C_ADDR;
 static bool    lcd_present = false;
