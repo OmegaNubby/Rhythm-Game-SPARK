@@ -4,7 +4,7 @@
 // Peripheral buses at a glance:
 //   SPI0 : TFT                 (GP18 SCK, GP19 MOSI, GP21 CSn)
 //   SPI1 : microSD             (GP28 MISO, GP30 SCK, GP31 MOSI)
-//   I2C1 : character LCD       (GP26 SDA, GP27 SCL)
+//   I2C1 : character LCD       (GP10 SDA, GP11 SCL)
 //   ADC  : 4 FSRs              (GP40-43 = ADC0-3)
 //   PWM  : audio               (GP44)
 //   7-seg: software bit-bang   (GP13-15) - NOT hardware SPI1, because the
@@ -24,19 +24,11 @@
 #define PIN_SEG_CLK           14    // SRCLK
 #define PIN_SEG_DATA          15    // SER
 
-// ---- LCD (AIP31068L, I2C) ---- FOR WEN LINGS BREADBOARD NOT UR GUYS
-// #define LCD_I2C        i2c1      // GPIO30/31 are I2C1, so this MUST be i2c1
-// #define PIN_LCD_SDA    30
-// #define PIN_LCD_SCL    31
-// #define LCD_I2C_ADDR   0x3E
-// #define LCD_I2C_BAUD   100000
-
 // ---------------- Character LCD, AIP31068L (I2C1) ---------
 #define LCD_I2C               i2c1
-#define PIN_LCD_SDA           26
-#define PIN_LCD_SCL           27
-#define PIN_LCD_AUX           25    // TODO: backlight or reset? confirm and rename
-#define LCD_I2C_ADDR          0x3E  // TODO: confirm with an I2C scan
+#define PIN_LCD_SDA           10
+#define PIN_LCD_SCL           11
+#define LCD_I2C_ADDR          0x27
 
 // ---------------- SPI0: TFT -------------------------------
 #define SPI_TFT               spi0

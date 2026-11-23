@@ -47,7 +47,7 @@ int main(void) {
 
     while (true) {
         // ---- Stage 1: real menu, real keypad ----
-        printf("TEST 1: menu. Press 1/2/3, then # to confirm\n");
+        printf("TEST 1: menu. Press 1/2/3, then D to confirm\n");
         int song = ui_menu_select_song(3);
         uint8_t diff = ui_menu_select_difficulty();
         printf("  chosen song index=%d difficulty=%u\n", song, (unsigned)diff);

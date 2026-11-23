@@ -1,3 +1,5 @@
+// lcd.c - 16x2 HD44780 character LCD behind a PCF8574 I2C backpack
+
 #include "lcd.h"
 #include "pins.h"
 #include "pico/stdlib.h"
@@ -8,56 +10,63 @@
 // Set to 0 once the LCD works to skip the boot-time bus diagnostics.
 #define LCD_DEBUG_BUS 1
 
-// AIP31068L command definitions
+// Backpack pin mapping. Matches nearly every PCF8574 LCD backpack; if yours
+// shows garbage but acknowledges its address, check these against its schematic.
+#define BP_RS 0x01
+#define BP_RW 0x02
+#define BP_EN 0x04
+#define BP_BL 0x08
+
+// HD44780 commands
 #define LCD_CLEARDISPLAY   0x01
-#define LCD_RETURNHOME     0x02
 #define LCD_ENTRYMODESET   0x04
 #define LCD_DISPLAYCONTROL 0x08
 #define LCD_FUNCTIONSET    0x20
 #define LCD_SETDDRAMADDR   0x80
 
-// Display control flags
-#define LCD_DISPLAYON      0x04
-#define LCD_CURSOROFF      0x00
-#define LCD_BLINKOFF       0x00
-
-// Function set flags (8-bit interface, 2 lines, 5x8 dots)
-#define LCD_FUNCTION_2LINE 0x08
-#define LCD_FUNCTION_DL8   0x10
-
-// I2C control byte: Co = 0, RS = 0 for command, RS = 1 for data.
-// With Co = 0, every byte after the control byte is treated as that type,
-// so a whole string can go out in ONE transaction.
-#define CONTROL_BYTE_CMD   0x00
-#define CONTROL_BYTE_DATA  0x40
-
-// Stay at 100 kHz: the controller needs ~30-40 us per character.
 #define LCD_I2C_HZ         (100 * 1000)
 #define LCD_I2C_TIMEOUT_US 10000
 
-static bool lcd_present = false;   // set by lcd_init() once the LCD ACKs
-static bool warned = false;
+// Tried in order. LCD_I2C_ADDR from pins.h goes first; the others are the two
+// usual backpack addresses, so a wrong pins.h value still gets found.
+static const uint8_t addr_candidates[] = { LCD_I2C_ADDR, 0x27, 0x3F};
+
+static uint8_t lcd_addr    = LCD_I2C_ADDR;
+static bool    lcd_present = false;
+static bool    warned      = false;
+static uint8_t backlight   = BP_BL;
 
 // ---------------------------------------------------------------------------
 // Low-level I2C
 // ---------------------------------------------------------------------------
 
-// Timeout so a missing or stuck LCD can never hang the whole program.
-// Silently does nothing if the LCD was not found at init.
+// Timeout so a missing or stuck LCD can never hang the program.
 static void lcd_i2c_write(const uint8_t *buf, size_t len) {
     if (!lcd_present) return;
-    int r = i2c_write_timeout_us(LCD_I2C, LCD_I2C_ADDR, buf, len, false, LCD_I2C_TIMEOUT_US);
+    int r = i2c_write_timeout_us(LCD_I2C, lcd_addr, buf, len, false, LCD_I2C_TIMEOUT_US);
     if (r < 0 && !warned) {
-        printf("lcd: I2C write to 0x%02X failed (%d): no ACK or bus stuck\n",
-               LCD_I2C_ADDR, r);
+        printf("lcd: I2C write to 0x%02X failed (%d)\n", lcd_addr, r);
         warned = true;
     }
 }
 
-static void lcd_send(uint8_t control_byte, uint8_t value) {
-    uint8_t buf[2] = { control_byte, value };
+// One nibble: put it on D4..D7, pulse E.
+static void lcd_nibble(uint8_t nib, uint8_t rs) {
+    uint8_t d = (uint8_t)((nib << 4) | backlight | rs);
+    uint8_t buf[2] = { (uint8_t)(d | BP_EN), d };
     lcd_i2c_write(buf, 2);
-    sleep_us(50);   // small delay for command processing
+}
+
+// One full byte as two nibbles, in a single I2C transaction.
+static void lcd_byte(uint8_t value, uint8_t rs) {
+    uint8_t hi = (uint8_t)((value & 0xF0) | backlight | rs);
+    uint8_t lo = (uint8_t)(((value << 4) & 0xF0) | backlight | rs);
+    uint8_t buf[4] = { (uint8_t)(hi | BP_EN), hi, (uint8_t)(lo | BP_EN), lo };
+    lcd_i2c_write(buf, 4);
+}
+
+static void lcd_cmd(uint8_t c) {
+    lcd_byte(c, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -65,7 +74,6 @@ static void lcd_send(uint8_t control_byte, uint8_t value) {
 // ---------------------------------------------------------------------------
 
 // Both lines should read 1 with pull-ups on and nothing talking.
-// A 0 means a short, a swapped wire, or a device holding the line low.
 static void lcd_bus_idle_check(void) {
     gpio_init(PIN_LCD_SDA); gpio_set_dir(PIN_LCD_SDA, GPIO_IN); gpio_pull_up(PIN_LCD_SDA);
     gpio_init(PIN_LCD_SCL); gpio_set_dir(PIN_LCD_SCL, GPIO_IN); gpio_pull_up(PIN_LCD_SCL);
@@ -75,7 +83,7 @@ static void lcd_bus_idle_check(void) {
 }
 
 static void i2c_scan(void) {
-    uint8_t dummy = 0;
+    uint8_t dummy = BP_BL;          // backlight bit on, so the scan doesn't blink it
     int found = 0;
     printf("lcd: I2C scan on SDA=%d SCL=%d\n", PIN_LCD_SDA, PIN_LCD_SCL);
     for (uint8_t a = 0x08; a < 0x78; a++) {
@@ -102,55 +110,81 @@ void lcd_init(void) {
     gpio_pull_up(PIN_LCD_SDA);
     gpio_pull_up(PIN_LCD_SCL);
 
-    sleep_ms(50);                   // let the LCD controller power up
+    sleep_ms(50);                   // HD44780 needs >40 ms after power-up
 
 #if LCD_DEBUG_BUS
     i2c_scan();
 #endif
 
-    // Initialize AIP31068L in 8-bit interface mode over I2C
-    lcd_send(CONTROL_BYTE_CMD, LCD_FUNCTIONSET | LCD_FUNCTION_DL8 | LCD_FUNCTION_2LINE);
+    // Find the backpack. Only mark the LCD present once something ACKs.
+    uint8_t probe = backlight;
+    lcd_present = false;
+    for (unsigned i = 0; i < sizeof addr_candidates; i++) {
+        int r = i2c_write_timeout_us(LCD_I2C, addr_candidates[i], &probe, 1, false,
+                                     LCD_I2C_TIMEOUT_US);
+        if (r >= 0) {
+            lcd_addr = addr_candidates[i];
+            lcd_present = true;
+            break;
+        }
+    }
+    if (!lcd_present) {
+        printf("lcd: nothing ACKed at 0x%02X, 0x27 or 0x3F: LCD disabled "
+               "(check power, wiring, pull-ups)\n", LCD_I2C_ADDR);
+        return;
+    }
+    if (lcd_addr != LCD_I2C_ADDR)
+        printf("lcd: found at 0x%02X (pins.h says 0x%02X, update it)\n",
+               lcd_addr, LCD_I2C_ADDR);
+
+    // HD44780 reset-by-instruction: force 8-bit mode three times, then
+    // switch to 4-bit mode.
+    lcd_nibble(0x03, 0);
     sleep_ms(5);
+    lcd_nibble(0x03, 0);
+    sleep_ms(1);
+    lcd_nibble(0x03, 0);
+    sleep_ms(1);
+    lcd_nibble(0x02, 0);            // now in 4-bit mode
+    sleep_ms(1);
 
-    // Display ON, cursor OFF, blink OFF
-    lcd_send(CONTROL_BYTE_CMD, LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
-
+    lcd_cmd(LCD_FUNCTIONSET | 0x08);                    // 4-bit, 2 lines, 5x8 font
+    lcd_cmd(LCD_DISPLAYCONTROL);                        // display off
     lcd_clear();
+    lcd_cmd(LCD_ENTRYMODESET | 0x02);                   // increment, no shift
+    lcd_cmd(LCD_DISPLAYCONTROL | 0x04);                 // display on, no cursor
 
-    // Entry mode: increment cursor, no display shift
-    lcd_send(CONTROL_BYTE_CMD, LCD_ENTRYMODESET | 0x02);
-
-    printf("lcd: init done\n");
+    printf("lcd: init done (backpack at 0x%02X)\n", lcd_addr);
 }
 
 void lcd_clear(void) {
-    lcd_send(CONTROL_BYTE_CMD, LCD_CLEARDISPLAY);
-    sleep_ms(2);    // clear needs a longer delay
+    lcd_cmd(LCD_CLEARDISPLAY);
+    sleep_ms(2);                    // clear needs about 1.6 ms
 }
 
 void lcd_set_cursor(uint8_t row, uint8_t col) {
-    // Row offsets for a 16x2 LCD: 0x00 for row 0, 0x40 for row 1
     static const uint8_t row_offsets[] = { 0x00, 0x40 };
     if (row > 1)  row = 1;
     if (col > 15) col = 15;
-    lcd_send(CONTROL_BYTE_CMD, LCD_SETDDRAMADDR | (row_offsets[row] + col));
+    lcd_cmd(LCD_SETDDRAMADDR | (row_offsets[row] + col));
 }
 
 void lcd_write_char(char c) {
-    lcd_send(CONTROL_BYTE_DATA, (uint8_t)c);
+    lcd_byte((uint8_t)c, BP_RS);
 }
 
 void lcd_write_string(const char *str) {
-    // One I2C transaction per string (up to 32 chars) instead of one per
-    // character: a 16-char row takes about 1.6 ms instead of about 5 ms.
-    uint8_t buf[1 + 32];
+    // Up to 32 chars in one I2C transaction (4 bytes per character).
+    uint8_t buf[4 * 32];
     size_t n = 0;
-    buf[n++] = CONTROL_BYTE_DATA;
-    while (*str && n < sizeof(buf)) {
-        buf[n++] = (uint8_t)*str++;
+    while (*str && n + 4 <= sizeof(buf)) {
+        uint8_t v  = (uint8_t)*str++;
+        uint8_t hi = (uint8_t)((v & 0xF0) | backlight | BP_RS);
+        uint8_t lo = (uint8_t)(((v << 4) & 0xF0) | backlight | BP_RS);
+        buf[n++] = hi | BP_EN;
+        buf[n++] = hi;
+        buf[n++] = lo | BP_EN;
+        buf[n++] = lo;
     }
-    if (n > 1) {
-        lcd_i2c_write(buf, n);
-        sleep_us(50);
-    }
+    if (n) lcd_i2c_write(buf, n);
 }

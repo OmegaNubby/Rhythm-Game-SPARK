@@ -72,7 +72,7 @@ static const char *judge_name(judgement_t j) {
 static void draw_menu(void) {
     char line[24];
     lcd_row(0, song_titles[selected_song_index]);
-    snprintf(line, sizeof line, "Mode:%-6s #:OK", mode_names[selected_song_index]);
+    snprintf(line, sizeof line, "Mode:%-6s D:OK", mode_names[selected_song_index]);
     lcd_row(1, line);
 }
 
@@ -94,7 +94,7 @@ void ui_init(void) {
     lcd_wipe();
     lcd_row(0, "Welcome to");
     lcd_row(1, "Rhythm Game!");
-    seg7_update(8888);                      // lights every digit: quick 7-seg wiring check
+    seg7_update(88888888);                      // lights every digit: quick 7-seg wiring check
     sleep_ms(2000);
     seg7_update(0);
     last_score_shown = 0;
@@ -119,7 +119,7 @@ int ui_menu_select_song(int count) {
     lcd_wipe();
     snprintf(line, sizeof line, "Select Song 1-%d", limit);
     lcd_row(0, line);
-    lcd_row(1, "# to confirm");
+    lcd_row(1, "D to confirm");
     sleep_ms(1200);                         // brief instructional flash
 
     draw_menu();
