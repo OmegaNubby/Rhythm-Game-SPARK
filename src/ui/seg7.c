@@ -1,4 +1,3 @@
-
 #include "seg7.h"
 #include "pins.h"
 #include "pico/stdlib.h"

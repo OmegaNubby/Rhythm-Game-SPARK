@@ -6,7 +6,7 @@
 #include "chart.h"
 #include "audio.h"
 #include "render.h"
-// #include "ui.h"
+#include "ui.h"
 
 #define UI_PERIOD_US 100000   // refresh LCD/7-seg at 10 Hz (I2C is slow)
 
@@ -50,12 +50,16 @@ int main(void) {
         }
 
         case GAME_PLAYING: {
-            audio_refill();               // keep the ring buffer full
-            tile_input_poll();            // no-op if P2 polls on a timer
+            audio_refill();
+            tile_input_poll();
             game_update();
+
+            // Get the latest game state after updating.
+            s = game_get_state();
 
             note_view_t views[MAX_NOTE_VIEWS];
             int n = game_get_note_views(views, MAX_NOTE_VIEWS);
+
             render_frame(s, views, n);
 
             uint32_t t = time_us_32();
