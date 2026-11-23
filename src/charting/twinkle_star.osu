@@ -2,7 +2,7 @@ osu file format v14
 // Made with Cascade - https://cascade.sheepex.net
 
 [General]
-AudioFilename: twinkle_star.wav
+AudioFilename: twinkle.wav
 AudioLeadIn: 0
 PreviewTime: -1
 Countdown: 0
