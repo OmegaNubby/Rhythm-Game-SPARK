@@ -1,7 +1,7 @@
-twinkle.wav
-bit rate: 1411 kbps
+twinkle_star.wav
+bit rate: 1536 kbps
 channels: 2 (stereo)
-sample rate: 44.1k Hz
+sample rate: 48k Hz
 sample size: 16 bits
 
 NGYU.wav
